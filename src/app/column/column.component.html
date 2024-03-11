@@ -1,0 +1,16 @@
+<div class="issueContainer">
+  <ul
+    class="issueList receivesDrops"
+    (dragover)="allowDrop($event)"
+    (drop)="finalizeDrop($event)"
+  >
+    <li
+      *ngFor="let issue of issues"
+      [id]="issue.uniqueId"
+      [draggable]="true"
+      (dragstart)="configureDragStartEvent($event)"
+    >
+      <app-issue>{{ issue.title }}</app-issue>
+    </li>
+  </ul>
+</div>

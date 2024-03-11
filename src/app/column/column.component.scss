@@ -1,0 +1,18 @@
+.issueContainer {
+  background-color: rgba($color: #c4c4c4, $alpha: 1);
+  border-radius: 1rem;
+  width: 20rem;
+  height: 100%;
+  padding: 1rem;
+  .issueList {
+    height: 100%;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    li {
+      padding: 1rem;
+    }
+  }
+}
