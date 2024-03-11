@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { IssueComponent } from '../issue/issue.component';
 import { CommonModule } from '@angular/common';
 import { Issue, IssuesMockService } from '../issues-mock.service';
@@ -12,6 +12,10 @@ import { Issue, IssuesMockService } from '../issues-mock.service';
 })
 export class ColumnComponent {
   @Input() columnName!: string;
+
+  @ViewChild('dropZone', { read: ElementRef }) dropZone!: ElementRef;
+  @ViewChild('newIssueBtn', { read: ElementRef }) newIssueBtn!: ElementRef;
+
   issues!: Issue[];
   constructor(private issueService: IssuesMockService) {}
 
@@ -26,15 +30,15 @@ export class ColumnComponent {
   }
 
   allowDrop(dragEndEvent: DragEvent) {
-    if ((dragEndEvent.target as any).classList.contains('receivesDrops'))
-      dragEndEvent.preventDefault();
+    dragEndEvent.preventDefault();
   }
 
   finalizeDrop($event: DragEvent) {
     $event.preventDefault();
     let draggedElementId = $event.dataTransfer?.getData('draggedElementId');
-    ($event.target as any).appendChild(
-      document.getElementById(draggedElementId as string)
+    this.dropZone.nativeElement.insertBefore(
+      document.getElementById(draggedElementId as string),
+      this.newIssueBtn.nativeElement
     );
   }
 }

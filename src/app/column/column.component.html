@@ -1,6 +1,7 @@
 <div class="issueContainer">
   <ul
-    class="issueList receivesDrops"
+    #dropZone
+    class="issueList dropZone"
     (dragover)="allowDrop($event)"
     (drop)="finalizeDrop($event)"
   >
@@ -11,6 +12,10 @@
       (dragstart)="configureDragStartEvent($event)"
     >
       <app-issue>{{ issue.title }}</app-issue>
+    </li>
+
+    <li #newIssueBtn>
+      <button class="newIssueBtn">+</button>
     </li>
   </ul>
 </div>
