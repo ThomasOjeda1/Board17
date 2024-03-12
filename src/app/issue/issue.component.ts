@@ -8,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './issue.component.scss'
 })
 export class IssueComponent {
-
+  finalizeDropOnIssue($event: any) {
+    $event.stopPropagation();
+  }
 }

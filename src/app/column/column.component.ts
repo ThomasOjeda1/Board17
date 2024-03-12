@@ -2,6 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { IssueComponent } from '../issue/issue.component';
 import { CommonModule } from '@angular/common';
 import { Issue, IssuesMockService } from '../issues-mock.service';
+import { Observable, tap } from 'rxjs';
 
 @Component({
   selector: 'app-column',
@@ -17,12 +18,14 @@ export class ColumnComponent {
   @ViewChild('newIssueBtn', { read: ElementRef }) newIssueBtn!: ElementRef;
 
   issues!: Issue[];
+  issues$: Observable<any[]> | undefined;
   constructor(private issueService: IssuesMockService) {}
 
   ngOnInit() {
     this.issueService.getIssues(this.columnName).subscribe((issueArray) => {
       this.issues = issueArray;
     });
+    this.issues$ = this.issueService.getIssues(this.columnName);
   }
 
   configureDragStartEvent($event: DragEvent) {
@@ -36,6 +39,13 @@ export class ColumnComponent {
   finalizeDropOnZone($event: any) {
     let draggedElementId = $event.dataTransfer?.getData('draggedElementId');
     let targetClasses = ($event.target as any).classList;
+    let dropTarget = $event.target as HTMLElement;
+    let dropTargetId;
+    if (dropTarget.tagName === 'ARTICLE') {
+      dropTargetId = dropTarget.parentElement?.parentElement?.id;
+      console.log('dropTargetId: ', dropTargetId)
+    } 
+
     if (
       targetClasses.contains('dropZone') ||
       targetClasses.contains('newIssueBtnListElement')
@@ -50,10 +60,5 @@ export class ColumnComponent {
         document.getElementById($event.droppedOverIssueId)
       );
     }
-  }
-
-  finalizeDropOnIssue($event: any) {
-    console.log(this.columnName);
-    $event.droppedOverIssueId = $event.currentTarget.id;
   }
 }
