@@ -53,6 +53,7 @@ export class ColumnComponent {
   }
 
   finalizeDropOnIssue($event: any) {
+    console.log(this.columnName);
     $event.droppedOverIssueId = $event.currentTarget.id;
   }
 }
