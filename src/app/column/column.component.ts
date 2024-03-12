@@ -33,25 +33,26 @@ export class ColumnComponent {
     dragEndEvent.preventDefault();
   }
 
-  finalizeDropOnZone($event: DragEvent) {
+  finalizeDropOnZone($event: any) {
     let draggedElementId = $event.dataTransfer?.getData('draggedElementId');
     let targetClasses = ($event.target as any).classList;
-
-    if (targetClasses.contains('dropZone')) {
+    if (
+      targetClasses.contains('dropZone') ||
+      targetClasses.contains('newIssueBtnListElement')
+    ) {
       this.dropZone.nativeElement.insertBefore(
         document.getElementById(draggedElementId as string),
         this.newIssueBtn.nativeElement
       );
+    } else {
+      this.dropZone.nativeElement.insertBefore(
+        document.getElementById(draggedElementId as string),
+        document.getElementById($event.droppedOverIssueId)
+      );
     }
   }
 
-  finalizeDropOnIssue($event: DragEvent) {
-    console.log(this.columnName);
-    let draggedElementId = $event.dataTransfer?.getData('draggedElementId');
-    console.log(this.dropZone.nativeElement);
-    this.dropZone.nativeElement.insertBefore(
-      document.getElementById(draggedElementId as string),
-      $event.currentTarget
-    );
+  finalizeDropOnIssue($event: any) {
+    $event.droppedOverIssueId = $event.currentTarget.id;
   }
 }
