@@ -3,18 +3,24 @@
     #dropZone
     class="issueList dropZone"
     (dragover)="allowDrop($event)"
-    (drop)="finalizeDrop($event)"
+    (drop)="finalizeDropOnZone($event)"
   >
     <li
+      class="issue"
       *ngFor="let issue of issues"
       [id]="issue.uniqueId"
       [draggable]="true"
       (dragstart)="configureDragStartEvent($event)"
+      (drop)="finalizeDropOnIssue($event)"
     >
       <app-issue>{{ issue.title }}</app-issue>
     </li>
 
-    <li #newIssueBtn>
+    <li
+      #newIssueBtn
+      class="newIssueBtnListElement"
+      (drop)="finalizeDropOnIssue($event)"
+    >
       <button class="newIssueBtn">+</button>
     </li>
   </ul>
