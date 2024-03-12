@@ -18,13 +18,15 @@ export class ColumnComponent {
   @ViewChild('newIssueBtn', { read: ElementRef }) newIssueBtn!: ElementRef;
 
   issues!: Issue[];
-  issues$: Observable<any[]> | undefined;
+  issues$!: Observable<Issue[]>;
   constructor(private issueService: IssuesMockService) {}
 
   ngOnInit() {
-    this.issueService.getIssues(this.columnName).subscribe((issueArray) => {
+    /*     this.issueService.getIssues(this.columnName).subscribe((issueArray) => {
       this.issues = issueArray;
-    });
+    }); */
+    //this.issues$ = this.issueService.getIssues(this.columnName);
+
     this.issues$ = this.issueService.getIssues(this.columnName);
   }
 
@@ -43,21 +45,29 @@ export class ColumnComponent {
     let dropTargetId;
     if (dropTarget.tagName === 'ARTICLE') {
       dropTargetId = dropTarget.parentElement?.parentElement?.id;
-      console.log('dropTargetId: ', dropTargetId)
-    } 
+      console.log('dropTargetId: ', dropTargetId);
+    }
 
     if (
       targetClasses.contains('dropZone') ||
       targetClasses.contains('newIssueBtnListElement')
     ) {
-      this.dropZone.nativeElement.insertBefore(
+      /*       this.dropZone.nativeElement.insertBefore(
         document.getElementById(draggedElementId as string),
         this.newIssueBtn.nativeElement
-      );
+      ); */
+
+      this.issueService.moveIssueToColumn(draggedElementId, this.columnName);
     } else {
-      this.dropZone.nativeElement.insertBefore(
+      /*       this.dropZone.nativeElement.insertBefore(
         document.getElementById(draggedElementId as string),
         document.getElementById($event.droppedOverIssueId)
+      ); */
+
+      this.issueService.moveIssueToLocationInColumn(
+        draggedElementId,
+        dropTargetId as string,
+        this.columnName
       );
     }
   }
