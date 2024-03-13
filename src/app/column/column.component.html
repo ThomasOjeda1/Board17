@@ -1,4 +1,6 @@
-<div class="issueContainer">
+<section class="issueContainer">
+  <h2>{{ columnName }}</h2>
+
   <ul
     #dropZone
     class="issueList"
@@ -16,8 +18,8 @@
       <app-issue>{{ issue.title }}</app-issue>
     </li>
 
-    <li #newIssueBtn class="newIssueBtnListElement">
+    <li>
       <button class="newIssueBtn">+</button>
     </li>
   </ul>
-</div>
+</section>

@@ -1,4 +1,6 @@
 <section class="board">
-  <app-column [columnName]="'column1'"></app-column>
-  <app-column [columnName]="'column2'"></app-column>
+  <app-column
+    *ngFor="let column of columns$ | async"
+    [columnName]="column"
+  ></app-column>
 </section>

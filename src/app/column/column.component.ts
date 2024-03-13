@@ -15,17 +15,11 @@ export class ColumnComponent {
   @Input() columnName!: string;
 
   @ViewChild('dropZone', { read: ElementRef }) dropZone!: ElementRef;
-  @ViewChild('newIssueBtn', { read: ElementRef }) newIssueBtn!: ElementRef;
 
   issues$!: Observable<Issue[]>;
   constructor(private issueService: IssuesMockService) {}
 
   ngOnInit() {
-    /*     this.issueService.getIssues(this.columnName).subscribe((issueArray) => {
-      this.issues = issueArray;
-    }); */
-    //this.issues$ = this.issueService.getIssues(this.columnName);
-
     this.issues$ = this.issueService.getIssues(this.columnName);
   }
 
@@ -39,34 +33,13 @@ export class ColumnComponent {
 
   finalizeDropOnZone($event: any) {
     let draggedElementId = $event.dataTransfer?.getData('draggedElementId');
-    /*     let targetClasses = ($event.target as any).classList;
-    let dropTarget = $event.target as HTMLElement;
-    let dropTargetId;
-    if (dropTarget.tagName === 'ARTICLE') {
-      dropTargetId = dropTarget.parentElement?.parentElement?.id;
-      console.log('dropTargetId: ', dropTargetId);
-    } */
-
-    if (
-      /*       targetClasses.contains('dropZone') ||
-      targetClasses.contains('newIssueBtnListElement') */
-      this.issueService.droppedOnIssueId === null
-    ) {
-      /*       this.dropZone.nativeElement.insertBefore(
-        document.getElementById(draggedElementId as string),
-        this.newIssueBtn.nativeElement
-      ); */
-
+    let droppedOnIssueId = this.issueService.getDroppedOnIssueIdAndClear();
+    if (droppedOnIssueId === null) {
       this.issueService.moveIssueToColumn(draggedElementId, this.columnName);
     } else {
-      /*       this.dropZone.nativeElement.insertBefore(
-        document.getElementById(draggedElementId as string),
-        document.getElementById($event.droppedOverIssueId)
-      ); */
-
       this.issueService.moveIssueBeforeTargetInColumn(
         draggedElementId,
-        this.issueService.droppedOnIssueId,
+        droppedOnIssueId,
         this.columnName
       );
 
@@ -75,8 +48,8 @@ export class ColumnComponent {
   }
 
   registerTargetIssue($event: DragEvent) {
-    this.issueService.droppedOnIssueId = (
-      $event.currentTarget as HTMLElement
-    ).id;
+    this.issueService.setDroppedOnIssueId(
+      ($event.currentTarget as HTMLElement).id
+    );
   }
 }

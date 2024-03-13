@@ -13,7 +13,6 @@ export interface Issue {
   providedIn: 'root',
 })
 export class IssuesMockService {
-  //Im putting it here just for the sake of testing the idea
   droppedOnIssueId: string | null = null;
 
   issues = [
@@ -75,8 +74,14 @@ export class IssuesMockService {
     },
   ];
 
+  columns = ['column1', 'column2'];
+
   issuesEmitter: BehaviorSubject<Issue[]> = new BehaviorSubject<Issue[]>(
     this.issues
+  );
+
+  columnsEmitter: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(
+    this.columns
   );
 
   constructor() {}
@@ -95,7 +100,13 @@ export class IssuesMockService {
     );
   }
 
+  getColumns(): Observable<string[]> {
+    return this.columnsEmitter.asObservable();
+  }
+
   moveIssueToColumn(draggedElementId: string, newColumnName: string) {
+    if (!this.isColumnAvailable(newColumnName)) return;
+
     let modifiedIssueIndex = this.issues.findIndex((issue) => {
       return issue.uniqueId === draggedElementId;
     });
@@ -111,10 +122,10 @@ export class IssuesMockService {
       .map((issue) => {
         return issue.priority;
       })
-      .reduce((prev = -1, curr) => {
+      .reduce((prev, curr) => {
         if (curr > prev) return curr;
         else return prev;
-      });
+      }, -1);
     modifiedIssue.priority = largestPriority + 1;
 
     modifiedIssue.column = newColumnName;
@@ -127,6 +138,7 @@ export class IssuesMockService {
     dropTargetId: string,
     newColumnName: string
   ) {
+    if (!this.isColumnAvailable(newColumnName)) return;
     let modifiedIssueIndex = this.issues.findIndex((issue) => {
       return issue.uniqueId === draggedElementId;
     });
@@ -159,4 +171,26 @@ export class IssuesMockService {
 
     this.issuesEmitter.next(this.issues);
   }
+
+  isColumnAvailable(column: string) {
+    return this.columns.includes(column);
+  }
+
+  addNewColumn(newColumnName: string) {
+    if (!this.isColumnAvailable(newColumnName))
+      this.columns.push(newColumnName);
+  }
+
+  setDroppedOnIssueId(id: string) {
+    this.droppedOnIssueId = id;
+  }
+
+  getDroppedOnIssueIdAndClear() {
+    let id = this.droppedOnIssueId;
+    this.droppedOnIssueId = null;
+    return id;
+  }
+
+  addIssue() {}
+  removeIssue() {}
 }
