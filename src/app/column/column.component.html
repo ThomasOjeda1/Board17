@@ -1,7 +1,7 @@
 <div class="issueContainer">
   <ul
     #dropZone
-    class="issueList dropZone"
+    class="issueList"
     (dragover)="allowDrop($event)"
     (drop)="finalizeDropOnZone($event)"
   >
@@ -11,6 +11,7 @@
       [id]="issue.uniqueId"
       [draggable]="true"
       (dragstart)="configureDragStartEvent($event)"
+      (drop)="registerTargetIssue($event)"
     >
       <app-issue>{{ issue.title }}</app-issue>
     </li>

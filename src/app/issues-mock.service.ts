@@ -13,6 +13,9 @@ export interface Issue {
   providedIn: 'root',
 })
 export class IssuesMockService {
+  //Im putting it here just for the sake of testing the idea
+  droppedOnIssueId: string | null = null;
+
   issues = [
     {
       uniqueId: '0xAAA',
@@ -119,7 +122,7 @@ export class IssuesMockService {
     this.issuesEmitter.next(this.issues);
   }
 
-  moveIssueToLocationInColumn(
+  moveIssueBeforeTargetInColumn(
     draggedElementId: string,
     dropTargetId: string,
     newColumnName: string
@@ -136,17 +139,14 @@ export class IssuesMockService {
     let modifiedIssue = this.issues[modifiedIssueIndex];
     let dropTargetIssue = this.issues[dropTargetIssueIndex];
 
-    //Adjust origin column priorities
     for (let i = 0; i < this.issues.length; i++) {
+      //Adjust origin column priorities (drecrease them)
       if (
         this.issues[i].column === modifiedIssue.column &&
         this.issues[i].priority > modifiedIssue.priority
       )
         this.issues[i].priority--;
-    }
-
-    //Adjust destination column priorities
-    for (let i = 0; i < this.issues.length; i++) {
+      //Adjust destination column priorities (increment them)
       if (
         this.issues[i].column === newColumnName &&
         this.issues[i].priority >= dropTargetIssue.priority
