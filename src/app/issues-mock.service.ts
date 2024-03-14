@@ -107,13 +107,9 @@ export class IssuesMockService {
   moveIssueToColumn(draggedElementId: string, newColumnName: string) {
     if (!this.isColumnAvailable(newColumnName)) return;
 
-    let modifiedIssueIndex = this.issues.findIndex((issue) => {
-      return issue.uniqueId === draggedElementId;
-    });
+    let modifiedIssue = this.getIssue(draggedElementId);
 
-    if (modifiedIssueIndex === -1) return;
-
-    let modifiedIssue = this.issues[modifiedIssueIndex];
+    if (!modifiedIssue) return;
 
     let largestPriority = this.issues
       .filter((issue) => {
@@ -126,17 +122,10 @@ export class IssuesMockService {
         if (curr > prev) return curr;
         else return prev;
       }, -1);
-    modifiedIssue.priority = largestPriority + 1;
 
-    modifiedIssue.column = newColumnName;
+    if (largestPriority === -1) largestPriority = 0;
 
-    this.issuesEmitter.next(this.issues);
-
-    console.log(
-      this.issues.filter((issue) => {
-        return issue.column == newColumnName;
-      })
-    );
+    this.moveIssue(modifiedIssue, largestPriority, newColumnName);
   }
 
   moveIssueBeforeTargetInColumn(
@@ -145,50 +134,58 @@ export class IssuesMockService {
     newColumnName: string
   ) {
     if (!this.isColumnAvailable(newColumnName)) return;
-    let modifiedIssueIndex = this.issues.findIndex((issue) => {
-      return issue.uniqueId === draggedElementId;
-    });
-    let dropTargetIssueIndex = this.issues.findIndex((issue) => {
-      return issue.uniqueId === dropTargetId;
-    });
+    let modifiedIssue = this.getIssue(draggedElementId);
+    let dropTargetIssue = this.getIssue(dropTargetId);
 
-    if (modifiedIssueIndex === -1 || dropTargetIssueIndex === -1) return;
+    if (!modifiedIssue || !dropTargetIssue) return;
 
-    let modifiedIssue = this.issues[modifiedIssueIndex];
-    let dropTargetIssue = this.issues[dropTargetIssueIndex];
+    this.moveIssue(modifiedIssue, dropTargetIssue.priority, newColumnName);
+  }
 
-    let modifiedIssuePriority = modifiedIssue.priority;
-    let dropTargetIssuePriority = dropTargetIssue.priority;
+  moveIssue(
+    issue: Issue,
+    destinationPriority: number,
+    destinationColumn: string
+  ) {
+    let issueOriginalPriority = issue.priority;
+    let issueOriginalColumn = issue.column;
 
     for (let i = 0; i < this.issues.length; i++) {
       //Adjust origin column priorities (drecrease them)
       if (
-        this.issues[i].column === modifiedIssue.column &&
-        this.issues[i].priority > modifiedIssuePriority
+        this.issues[i].column === issueOriginalColumn &&
+        this.issues[i].priority > issueOriginalPriority
       )
         this.issues[i].priority--;
     }
     //Adjust destination column priorities (increment them)
     for (let i = 0; i < this.issues.length; i++) {
       if (
-        this.issues[i].column === newColumnName &&
-        this.issues[i].priority >= dropTargetIssuePriority
+        this.issues[i].column === destinationColumn &&
+        this.issues[i].priority >= destinationPriority
       )
         this.issues[i].priority++;
     }
-    modifiedIssue.column = newColumnName;
-    modifiedIssue.priority = dropTargetIssuePriority;
+
+    issue.column = destinationColumn;
+    issue.priority = destinationPriority;
 
     this.issuesEmitter.next(this.issues);
     console.log(
       this.issues.filter((issue) => {
-        return issue.column == newColumnName;
+        return issue.column == destinationColumn;
       })
     );
   }
 
   isColumnAvailable(column: string) {
     return this.columns.includes(column);
+  }
+
+  getIssue(id: string) {
+    return this.issues.find((issue) => {
+      return issue.uniqueId === id;
+    });
   }
 
   addNewColumn(newColumnName: string) {
