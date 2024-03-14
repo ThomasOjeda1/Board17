@@ -131,6 +131,12 @@ export class IssuesMockService {
     modifiedIssue.column = newColumnName;
 
     this.issuesEmitter.next(this.issues);
+
+    console.log(
+      this.issues.filter((issue) => {
+        return issue.column == newColumnName;
+      })
+    );
   }
 
   moveIssueBeforeTargetInColumn(
@@ -151,25 +157,34 @@ export class IssuesMockService {
     let modifiedIssue = this.issues[modifiedIssueIndex];
     let dropTargetIssue = this.issues[dropTargetIssueIndex];
 
+    let modifiedIssuePriority = modifiedIssue.priority;
+    let dropTargetIssuePriority = dropTargetIssue.priority;
+
     for (let i = 0; i < this.issues.length; i++) {
       //Adjust origin column priorities (drecrease them)
       if (
         this.issues[i].column === modifiedIssue.column &&
-        this.issues[i].priority > modifiedIssue.priority
+        this.issues[i].priority > modifiedIssuePriority
       )
         this.issues[i].priority--;
-      //Adjust destination column priorities (increment them)
+    }
+    //Adjust destination column priorities (increment them)
+    for (let i = 0; i < this.issues.length; i++) {
       if (
         this.issues[i].column === newColumnName &&
-        this.issues[i].priority >= dropTargetIssue.priority
+        this.issues[i].priority >= dropTargetIssuePriority
       )
         this.issues[i].priority++;
     }
-
     modifiedIssue.column = newColumnName;
-    modifiedIssue.priority = dropTargetIssue.priority - 1;
+    modifiedIssue.priority = dropTargetIssuePriority;
 
     this.issuesEmitter.next(this.issues);
+    console.log(
+      this.issues.filter((issue) => {
+        return issue.column == newColumnName;
+      })
+    );
   }
 
   isColumnAvailable(column: string) {
