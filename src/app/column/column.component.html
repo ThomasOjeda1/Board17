@@ -1,23 +1,12 @@
 <section class="issueContainer">
   <h2>{{ columnName }}</h2>
 
-  <ul
-    #dropZone
-    class="issueList"
-    (dragover)="allowDrop($event)"
-    (drop)="finalizeDropOnZone($event)"
-  >
-    <li
-      class="issue"
-      *ngFor="let issue of issues$ | async"
-      [id]="issue.uniqueId"
-      [draggable]="true"
-      (dragstart)="configureDragStartEvent($event)"
-      (drop)="registerTargetIssue($event)"
-    >
+  <ul cdkDropList class="issueList" (cdkDropListDropped)="issueDropped($event)">
+    @for (issue of issues$ | async; track issue) {
+    <li cdkDrag class="issue" [id]="issue.uniqueId">
       <app-issue>{{ issue.title }}</app-issue>
     </li>
-
+    }
     <li>
       <button class="newIssueBtn">+</button>
     </li>
