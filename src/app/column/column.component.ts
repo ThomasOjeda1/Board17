@@ -28,15 +28,27 @@ export class ColumnComponent {
   }
 
   issueDropped($event: CdkDragDrop<string[]>) {
-    /*     console.log(
-      this.issues[$event.previousIndex].uniqueId,
-      this.issues[$event.currentIndex].uniqueId,
-      this.columnName
-    ); */
-    this.issueService.moveIssueBeforeTargetInColumn(
-      this.issues[$event.previousIndex].uniqueId,
-      this.issues[$event.currentIndex].uniqueId,
-      this.columnName
-    );
+    //It was dropped over an issue
+    if (this.issueExistsInThisColumn($event.currentIndex))
+      this.issueService.moveIssueBeforeTargetInColumn(
+        $event.previousContainer.element.nativeElement.children[
+          $event.previousIndex
+        ].id,
+        this.issues[$event.currentIndex].uniqueId,
+        this.columnName
+      );
+    //It was dropped over the list
+    else {
+      this.issueService.moveIssueToColumn(
+        $event.previousContainer.element.nativeElement.children[
+          $event.previousIndex
+        ].id,
+        this.columnName
+      );
+    }
+  }
+
+  issueExistsInThisColumn(index: number) {
+    return this.issues[index];
   }
 }

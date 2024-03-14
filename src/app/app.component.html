@@ -1,4 +1,4 @@
-<section class="board">
+<section class="board" cdkDropListGroup>
   <app-column
     *ngFor="let column of columns$ | async"
     [columnName]="column"

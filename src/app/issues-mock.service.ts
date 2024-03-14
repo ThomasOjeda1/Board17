@@ -125,6 +125,8 @@ export class IssuesMockService {
 
     if (largestPriority === -1) largestPriority = 0;
 
+    if (modifiedIssue.column !== newColumnName) largestPriority++; //BUGFIX //This has to be fixed splitting the issue removal and issue reinsertion code
+
     this.moveIssue(modifiedIssue, largestPriority, newColumnName);
   }
 
@@ -171,11 +173,6 @@ export class IssuesMockService {
     issue.priority = destinationPriority;
 
     this.issuesEmitter.next(this.issues);
-    console.log(
-      this.issues.filter((issue) => {
-        return issue.column == destinationColumn;
-      })
-    );
   }
 
   isColumnAvailable(column: string) {
