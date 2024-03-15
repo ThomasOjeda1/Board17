@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { IssueComponent } from '../issue/issue.component';
 import { CommonModule } from '@angular/common';
 import { Issue, IssuesMockService } from '../issues-mock.service';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-column',
@@ -13,8 +13,6 @@ import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 })
 export class ColumnComponent {
   @Input() columnName!: string;
-
-  @ViewChild('dropZone', { read: ElementRef }) dropZone!: ElementRef;
 
   issues$!: Observable<Issue[]>;
   constructor(private issueService: IssuesMockService) {}
