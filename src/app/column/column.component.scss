@@ -1,4 +1,4 @@
-.issueContainer {
+.column {
   background-color: rgba($color: #c4c4c4, $alpha: 1);
   border-radius: 1rem;
   width: 20rem;
@@ -39,8 +39,4 @@
 
 .cdk-drag-placeholder {
   opacity: 0;
-}
-
-.issue {
-  list-style: none;
 }
