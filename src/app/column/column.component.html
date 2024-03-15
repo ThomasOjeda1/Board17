@@ -1,14 +1,16 @@
 <section class="column">
   <h2>{{ columnName }}</h2>
   <div
+    #list
     cdkDropList
     class="issueList"
     (cdkDropListDropped)="issueDropped($event)"
   >
     @for (issue of issues$ | async; track issue) {
-    <app-issue cdkDrag class="issue" [id]="issue.uniqueId">{{
-      issue.title
-    }}</app-issue>
+    <div cdkDrag class="issue" [id]="issue.uniqueId">
+      <app-issue class="theissue">{{ issue.title }}</app-issue>
+    </div>
+
     }
     <li>
       <button class="newIssueBtn">+</button>

@@ -18,11 +18,34 @@ export class ColumnComponent {
   constructor(private issueService: IssuesMockService) {}
   issues!: Issue[];
 
+  @ViewChild('list', { read: ElementRef }) theList!: ElementRef;
+
   ngOnInit() {
     this.issues$ = this.issueService.getIssues(this.columnName);
     this.issueService.getIssues(this.columnName).subscribe((issues) => {
       this.issues = issues;
     });
+  }
+
+  observer!: MutationObserver;
+
+  ngAfterViewInit() {
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // Callback function to execute when mutations are observed
+    const callback = (mutationList: any, observer: any) => {
+      for (const mutation of mutationList)
+        if (mutation.type === 'attributes') {
+          //debugger;
+        }
+    };
+
+    // Create an observer instance linked to the callback function
+    this.observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    this.observer.observe(this.theList.nativeElement, config);
   }
 
   issueDropped($event: CdkDragDrop<string[]>) {
