@@ -72,9 +72,30 @@ export class IssuesMockService {
       column: 'column2',
       priority: 1,
     },
+    {
+      uniqueId: '0xAAI',
+      title: 'Everest',
+      description: 'Mountain',
+      column: 'column3',
+      priority: 0,
+    },
+    {
+      uniqueId: '0xAAJ',
+      title: 'Nile',
+      description: 'River',
+      column: 'column3',
+      priority: 1,
+    },
+    {
+      uniqueId: '0xAAK',
+      title: 'Sahara',
+      description: 'Desert',
+      column: 'column3',
+      priority: 2,
+    },
   ];
 
-  columns = ['column1', 'column2'];
+  columns = ['column1', 'column2', 'column3'];
 
   issuesEmitter: BehaviorSubject<Issue[]> = new BehaviorSubject<Issue[]>(
     this.issues
