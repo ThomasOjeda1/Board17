@@ -1,6 +1,6 @@
 <section class="column">
-  <h2>{{ columnName }}</h2>
-  <div
+  <div mat-subheader>{{ columnName }}</div>
+  <mat-list
     #list
     cdkDropList
     class="issueList"
@@ -8,12 +8,13 @@
   >
     @for (issue of issues$ | async; track issue) {
     <div cdkDrag class="issue" [id]="issue.uniqueId">
-      <app-issue class="theissue">{{ issue.title }}</app-issue>
+      <mat-list-item class="theissue">
+        <app-issue>{{ issue.title }}</app-issue>
+      </mat-list-item>
     </div>
 
     }
-    <li>
-      <button class="newIssueBtn">+</button>
-    </li>
-  </div>
+  </mat-list>
+
+  <button mat-button>+</button>
 </section>
