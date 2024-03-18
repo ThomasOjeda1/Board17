@@ -4,10 +4,12 @@ import { CommonModule } from '@angular/common';
 import { Issue, IssuesMockService } from '../issues-mock.service';
 import { Observable, tap } from 'rxjs';
 import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
+import { MaterialModule } from '../material/material.module';
+import { TriggerDebugger } from '../TriggerDebugger';
 @Component({
   selector: 'app-column',
   standalone: true,
-  imports: [IssueComponent, CommonModule, CdkDrag, CdkDropList],
+  imports: [IssueComponent, CommonModule, CdkDrag, CdkDropList, MaterialModule],
   templateUrl: './column.component.html',
   styleUrl: './column.component.scss',
 })
@@ -28,25 +30,19 @@ export class ColumnComponent {
     );
   }
 
-  observer!: MutationObserver;
-
   ngAfterViewInit() {
-    // Options for the observer (which mutations to observe)
-    const config = { attributes: true, childList: true, subtree: true };
+    let debuggerHelper = new TriggerDebugger(
+      this.theList.nativeElement,
+      { attributes: true, childList: true, subtree: true },
+      (mutationList: any, observer: any) => {
+        for (const mutation of mutationList)
+          if (mutation.type === 'attributes') {
+            //debugger;
+          }
+      }
+    );
 
-    // Callback function to execute when mutations are observed
-    const callback = (mutationList: any, observer: any) => {
-      for (const mutation of mutationList)
-        if (mutation.type === 'attributes') {
-          //debugger;
-        }
-    };
-
-    // Create an observer instance linked to the callback function
-    this.observer = new MutationObserver(callback);
-
-    // Start observing the target node for configured mutations
-    this.observer.observe(this.theList.nativeElement, config);
+    debuggerHelper.startObserving();
   }
 
   issueDropped($event: CdkDragDrop<string[]>) {
