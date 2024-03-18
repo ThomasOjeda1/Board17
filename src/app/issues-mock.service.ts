@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 export interface Issue {
   uniqueId: string;
@@ -98,18 +98,18 @@ export class IssuesMockService {
 
   columns = ['column1', 'column2', 'column3'];
 
-  issuesEmitter: BehaviorSubject<Issue[]> = new BehaviorSubject<Issue[]>(
+  issuesEmitter$: BehaviorSubject<Issue[]> = new BehaviorSubject<Issue[]>(
     this.issues
   );
 
-  columnsEmitter: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(
+  columnsEmitter$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(
     this.columns
   );
 
   constructor() {}
 
   getIssues(column: string): Observable<Issue[]> {
-    return this.issuesEmitter.pipe(
+    return this.issuesEmitter$.pipe(
       map((issues) => {
         return issues
           .filter((issue) => {
@@ -123,7 +123,7 @@ export class IssuesMockService {
   }
 
   getColumns(): Observable<string[]> {
-    return this.columnsEmitter.asObservable();
+    return this.columnsEmitter$.asObservable();
   }
 
   moveIssueToColumn(draggedElementId: string, newColumnName: string) {
@@ -182,7 +182,7 @@ export class IssuesMockService {
     issue.column = destinationColumn;
     issue.priority = destinationPriority;
 
-    this.issuesEmitter.next(this.issues);
+    this.issuesEmitter$.next(this.issues);
   }
 
   isColumnAvailable(column: string) {
@@ -235,7 +235,7 @@ export class IssuesMockService {
       priority: priority,
       column: issue.column,
     });
-    this.issuesEmitter.next(this.issues);
+    this.issuesEmitter$.next(this.issues);
   }
   removeIssue() {}
 }
