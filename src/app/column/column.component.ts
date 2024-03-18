@@ -3,13 +3,15 @@ import { IssueComponent } from '../issue/issue.component';
 import { CommonModule } from '@angular/common';
 import { Issue, IssuesMockService } from '../issues-mock.service';
 import { Observable, tap } from 'rxjs';
-import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { MaterialModule } from '../material/material.module';
 import { TriggerDebugger } from '../TriggerDebugger';
+import { Dialog } from '@angular/cdk/dialog';
+import { NewIssueFormComponent } from './new-issue-form/new-issue-form.component';
 @Component({
   selector: 'app-column',
   standalone: true,
-  imports: [IssueComponent, CommonModule, CdkDrag, CdkDropList, MaterialModule],
+  imports: [IssueComponent, CommonModule, MaterialModule],
   templateUrl: './column.component.html',
   styleUrl: './column.component.scss',
 })
@@ -17,7 +19,10 @@ export class ColumnComponent {
   @Input() columnName!: string;
 
   issues$!: Observable<Issue[]>;
-  constructor(private issueService: IssuesMockService) {}
+  constructor(
+    private issueService: IssuesMockService,
+    private dialogService: Dialog
+  ) {}
   issues!: Issue[];
 
   @ViewChild('list', { read: ElementRef }) theList!: ElementRef;
@@ -68,5 +73,13 @@ export class ColumnComponent {
 
   issueExistsInThisColumn(index: number) {
     return this.issues[index];
+  }
+
+  openNewIssueDialog($event: MouseEvent) {
+    this.issueService.newIssue({
+      column: this.columnName,
+      title: 'what',
+      description: 'the ell',
+    });
   }
 }

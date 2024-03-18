@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, map, of } from 'rxjs';
-
+import { v4 as uuidv4 } from 'uuid';
 export interface Issue {
   uniqueId: string;
   title: string;
@@ -8,6 +8,7 @@ export interface Issue {
   column: string;
   priority: number;
 }
+type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 @Injectable({
   providedIn: 'root',
@@ -132,23 +133,11 @@ export class IssuesMockService {
 
     if (!modifiedIssue) return;
 
-    let largestPriority = this.issues
-      .filter((issue) => {
-        return issue.column === newColumnName;
-      })
-      .map((issue) => {
-        return issue.priority;
-      })
-      .reduce((prev, curr) => {
-        if (curr > prev) return curr;
-        else return prev;
-      }, -1);
+    let biggestPriority = this.getBigestPriorityInColumn(newColumnName);
 
-    if (largestPriority === -1) largestPriority = 0;
+    if (modifiedIssue.column !== newColumnName) biggestPriority++; //BUGFIX //This has to be fixed splitting the issue removal and issue reinsertion code
 
-    if (modifiedIssue.column !== newColumnName) largestPriority++; //BUGFIX //This has to be fixed splitting the issue removal and issue reinsertion code
-
-    this.moveIssue(modifiedIssue, largestPriority, newColumnName);
+    this.moveIssue(modifiedIssue, biggestPriority, newColumnName);
   }
 
   moveIssueBeforeTargetInColumn(
@@ -221,6 +210,32 @@ export class IssuesMockService {
     return id;
   }
 
-  addIssue() {}
+  getBigestPriorityInColumn(column: string) {
+    let biggestPriority = this.issues
+      .filter((issue) => {
+        return issue.column === column;
+      })
+      .map((issue) => {
+        return issue.priority;
+      })
+      .reduce((prev, curr) => {
+        if (curr > prev) return curr;
+        else return prev;
+      }, -1);
+    if (biggestPriority === -1) return 0;
+    else return biggestPriority;
+  }
+
+  newIssue(issue: Optional<Issue, 'uniqueId' | 'priority'>) {
+    const priority = this.getBigestPriorityInColumn(issue.column) + 1;
+    this.issues.push({
+      uniqueId: uuidv4(),
+      title: issue.title,
+      description: issue.description,
+      priority: priority,
+      column: issue.column,
+    });
+    this.issuesEmitter.next(this.issues);
+  }
   removeIssue() {}
 }
