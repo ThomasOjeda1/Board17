@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { IssueComponent } from '../issue/issue.component';
 import { CommonModule } from '@angular/common';
 import { Issue, IssuesMockService } from '../issues-mock.service';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-column',
@@ -21,10 +21,11 @@ export class ColumnComponent {
   @ViewChild('list', { read: ElementRef }) theList!: ElementRef;
 
   ngOnInit() {
-    this.issues$ = this.issueService.getIssues(this.columnName);
-    this.issueService.getIssues(this.columnName).subscribe((issues) => {
-      this.issues = issues;
-    });
+    this.issues$ = this.issueService.getIssues(this.columnName).pipe(
+      tap((data) => {
+        this.issues = data;
+      })
+    );
   }
 
   observer!: MutationObserver;
