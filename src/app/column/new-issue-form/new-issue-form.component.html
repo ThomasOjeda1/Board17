@@ -1,11 +1,20 @@
 <section class="newIssueForm">
   <mat-form-field>
     <mat-label>Input</mat-label>
-    <input matInput />
+    <input [formControl]="titleControl" matInput />
   </mat-form-field>
-
+  <mat-form-field>
+    <mat-label>Column</mat-label>
+    <input [formControl]="columnControl" matInput />
+  </mat-form-field>
   <mat-form-field>
     <mat-label>Textarea</mat-label>
-    <textarea matInput style="resize: none"></textarea>
+    <textarea
+      [formControl]="descriptionControl"
+      matInput
+      style="resize: none"
+    ></textarea>
   </mat-form-field>
+
+  <button mat-button (click)="addIssue()">Add issue</button>
 </section>

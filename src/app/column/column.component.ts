@@ -6,8 +6,9 @@ import { Observable, tap } from 'rxjs';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { MaterialModule } from '../material/material.module';
 import { TriggerDebugger } from '../TriggerDebugger';
-import { Dialog } from '@angular/cdk/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { NewIssueFormComponent } from './new-issue-form/new-issue-form.component';
+
 @Component({
   selector: 'app-column',
   standalone: true,
@@ -21,8 +22,9 @@ export class ColumnComponent {
   issues$!: Observable<Issue[]>;
   constructor(
     private issueService: IssuesMockService,
-    private dialogService: Dialog
+    public dialogService: MatDialog
   ) {}
+
   issues!: Issue[];
 
   @ViewChild('list', { read: ElementRef }) theList!: ElementRef;
@@ -75,11 +77,8 @@ export class ColumnComponent {
     return this.issues[index];
   }
 
-  openNewIssueDialog($event: MouseEvent) {
-    this.issueService.newIssue({
-      column: this.columnName,
-      title: 'what',
-      description: 'the ell',
-    });
+  openNewIssueDialog() {
+    const dialogRef = this.dialogService.open(NewIssueFormComponent);
+    dialogRef.componentRef?.setInput('column', this.columnName);
   }
 }

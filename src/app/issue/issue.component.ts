@@ -5,10 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './issue.component.html',
-  styleUrl: './issue.component.scss'
+  styleUrl: './issue.component.scss',
 })
-export class IssueComponent {
-  finalizeDropOnIssue($event: any) {
-    $event.stopPropagation();
-  }
-}
+export class IssueComponent {}
