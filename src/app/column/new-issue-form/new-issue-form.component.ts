@@ -33,7 +33,7 @@ export class NewIssueFormComponent {
   ) {}
 
   addIssue() {
-    this.issueService.newIssue({
+    this.issueService.addNewIssue({
       column: this.columnControl.value,
       title: this.titleControl.value,
       description: this.descriptionControl.value,

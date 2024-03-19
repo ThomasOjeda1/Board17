@@ -30,7 +30,7 @@ export class ColumnComponent {
   @ViewChild('list', { read: ElementRef }) theList!: ElementRef;
 
   ngOnInit() {
-    this.issues$ = this.issueService.getIssues(this.columnName).pipe(
+    this.issues$ = this.issueService.getColumnIssues(this.columnName).pipe(
       tap((data) => {
         this.issues = data;
       })
