@@ -53,7 +53,6 @@ export class IssuesMockService {
     return this.columnsEmitter$.asObservable();
   }
 
-  //HAVE TO TEST
   moveIssueToColumn(draggedElementId: string, newColumnName: string) {
     if (!this.isColumnAvailable(newColumnName)) return;
 
@@ -68,7 +67,6 @@ export class IssuesMockService {
     this.moveIssue(modifiedIssue, highestPriority, newColumnName);
   }
 
-  //HAVE TO TEST
   moveIssueBeforeTargetInColumn(
     draggedElementId: string,
     dropTargetId: string,
@@ -115,12 +113,10 @@ export class IssuesMockService {
     this.issuesEmitter$.next(this.issues);
   }
 
-  //HAVE TO TEST
   isColumnAvailable(column: string) {
     return this.columns.includes(column);
   }
 
-  //HAVE TO TEST
   getIssue(id: string) {
     return this.issues.find((issue) => {
       return issue.uniqueId === id;
