@@ -16,5 +16,11 @@
     ></textarea>
   </mat-form-field>
 
-  <button mat-button (click)="addIssue()">Add issue</button>
+  <button
+    mat-button
+    [disabled]="titleControl.hasError('required')"
+    (click)="addIssue()"
+  >
+    Add issue
+  </button>
 </section>

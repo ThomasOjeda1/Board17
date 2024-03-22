@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { MaterialModule } from '../../material/material.module';
 import { IssuesMockService } from '../../issues-mock.service';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -23,7 +23,10 @@ export class NewIssueFormComponent implements OnDestroy {
     this.descriptionControl.setValue(v);
   }
 
-  titleControl = new FormControl();
+  titleControl = new FormControl<string | undefined>(
+    undefined,
+    Validators.required
+  );
   columnControl = new FormControl();
   descriptionControl = new FormControl();
 
@@ -35,7 +38,7 @@ export class NewIssueFormComponent implements OnDestroy {
   addIssue() {
     this.issueService.addNewIssue({
       column: this.columnControl.value,
-      title: this.titleControl.value,
+      title: this.titleControl.value || '',
       description: this.descriptionControl.value,
     });
     this.dialogRef.close();

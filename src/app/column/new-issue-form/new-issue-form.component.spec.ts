@@ -52,6 +52,7 @@ describe('NewIssueFormComponent', () => {
   });
 
   it('should display a disabled submit button at the start', () => {
+    fixture.detectChanges();
     const button = el.query(By.directive(MatButton));
 
     expect(button).withContext('submit button is not present').toBeTruthy();
