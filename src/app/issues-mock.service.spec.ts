@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { IssuesMockService } from './issues-mock.service';
 import { take } from 'rxjs';
-import { Serializer } from '@angular/compiler';
 
 describe('IssuesMockService', () => {
   let service: IssuesMockService;
@@ -133,6 +132,14 @@ describe('IssuesMockService', () => {
       expectedHighestPriority,
       service.getHighestPriorityInColumn('NEW_COLUMN')
     );
+  });
+
+  it('method getHighestPriorityIncolumn should return 0 if the column is incorrect', () => {
+    expect(service.getHighestPriorityInColumn('nonExistentColumn'))
+      .withContext(
+        'method returned a priority different than 0 of a non existent column'
+      )
+      .toBe(0);
   });
 
   it('method getColumns should emit all the available columns upon subscription', () => {
@@ -294,10 +301,81 @@ describe('IssuesMockService', () => {
       .toBeFalse();
   });
 
-  it(
-    'method moveIssueBeforeTargetInColumn should move an issue to a column and set it to a lower priority than the target'
-  ),
-    () => {
-      ///COMPLETE
-    };
+  it('method moveIssueBeforeTargetInColumn should not perform any action if any of the parameters are incorrect', () => {
+    service.moveIssueBeforeTargetInColumn(
+      'nonExistantId',
+      'nonExistantId',
+      'nonExistantColumn'
+    );
+
+    service
+      .getColumnIssues('column1')
+      .pipe(take(1))
+      .subscribe((issues) => {
+        expect(issues.length)
+          .withContext('An issue was added to the issue array')
+          .toEqual(6);
+      });
+  });
+
+  it('method moveIssueBeforeTargetInColumn should move an issue to a column and set it to a lower priority than the target', () => {
+    spyOn(service.issuesEmitter$, 'next').and.callThrough();
+
+    service.moveIssueBeforeTargetInColumn(
+      '546a49bf-d7ed-4780-ae50-1a3ae7d47da0',
+      '888cc1cd-eb7b-41c6-8055-d219e2fb22d9',
+      'column3'
+    );
+
+    expect(service.issuesEmitter$.next)
+      .withContext('issueEmitter$ did not emit a value')
+      .toHaveBeenCalledTimes(1);
+
+    service
+      .getColumnIssues('column1')
+      .pipe(take(1))
+      .subscribe((issues) => {
+        const issueThatUsedToBeAfterMovedIssue = issues.find((issue) => {
+          return issue.uniqueId === 'd0fb7738-4dac-45a9-b4f1-78eeabbd6917';
+        });
+
+        expect(issueThatUsedToBeAfterMovedIssue)
+          .withContext('issue that used to be after moved issue does not exist')
+          .toBeTruthy();
+        expect(issueThatUsedToBeAfterMovedIssue?.priority)
+          .withContext(
+            'issue that used to be after moved issue does not have the correct priority (2)'
+          )
+          .toEqual(2);
+      });
+
+    service
+      .getColumnIssues('column3')
+      .pipe(take(1))
+      .subscribe((issues) => {
+        const issueThatIsNowAfterMovedIssue = issues.find((issue) => {
+          return issue.uniqueId === '888cc1cd-eb7b-41c6-8055-d219e2fb22d9';
+        });
+
+        expect(issueThatIsNowAfterMovedIssue)
+          .withContext('issue that is now after moved issue does not exist')
+          .toBeTruthy();
+        expect(issueThatIsNowAfterMovedIssue?.priority)
+          .withContext(
+            'issue that is now after moved issue does not have the correct priority (1)'
+          )
+          .toEqual(1);
+
+        const movedIssue = issues.find((issue) => {
+          return issue.uniqueId === '546a49bf-d7ed-4780-ae50-1a3ae7d47da0';
+        });
+
+        expect(movedIssue)
+          .withContext('moved issue does not exist')
+          .toBeTruthy();
+        expect(movedIssue?.priority)
+          .withContext('moved issue does not have the correct priority (0)')
+          .toEqual(0);
+      });
+  });
 });

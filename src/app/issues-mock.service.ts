@@ -68,6 +68,7 @@ export class IssuesMockService {
   }
 
   moveIssueBeforeTargetInColumn(
+    //Have to TEST what happens if the origin and destination are the same issue
     draggedElementId: string,
     dropTargetId: string,
     newColumnName: string

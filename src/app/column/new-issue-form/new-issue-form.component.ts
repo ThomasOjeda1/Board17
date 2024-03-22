@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { MaterialModule } from '../../material/material.module';
 import { IssuesMockService } from '../../issues-mock.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +11,7 @@ import { MatDialogRef } from '@angular/material/dialog';
   templateUrl: './new-issue-form.component.html',
   styleUrl: './new-issue-form.component.scss',
 })
-export class NewIssueFormComponent {
+export class NewIssueFormComponent implements OnDestroy {
   @Input() public set column(v: string) {
     this.columnControl.setValue(v);
   }
@@ -40,4 +40,6 @@ export class NewIssueFormComponent {
     });
     this.dialogRef.close();
   }
+
+  ngOnDestroy() {}
 }
