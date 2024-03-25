@@ -1,31 +1,42 @@
 import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
-
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { NewIssueFormComponent } from './new-issue-form.component';
 import { MatDialogRef } from '@angular/material/dialog';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { IssuesMockService } from '../../issues-mock.service';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { MatButton } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSelectHarness } from '@angular/material/select/testing';
+import { of } from 'rxjs';
 
 describe('NewIssueFormComponent', () => {
   let component: NewIssueFormComponent;
   let fixture: ComponentFixture<NewIssueFormComponent>;
   let el: DebugElement;
   let dialogRefServiceSpy: any;
-  let issuesServiceSpy: any;
+  let issueServiceSpy: any;
+  let harnessLoader: HarnessLoader;
 
   beforeEach(async () => {
     dialogRefServiceSpy = jasmine.createSpyObj('dialogRef', ['close']);
-    issuesServiceSpy = jasmine.createSpyObj('issuesService', ['addNewIssue']);
+    issueServiceSpy = jasmine.createSpyObj('issueService', [
+      'addNewIssue',
+      'getColumns',
+    ]);
 
     await TestBed.configureTestingModule({
-      imports: [NewIssueFormComponent, ReactiveFormsModule],
+      imports: [
+        NewIssueFormComponent,
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+      ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefServiceSpy }, ///UNSTUCK BUGFIX, WILL HAVE TO REVIEW LATer
-        { provide: IssuesMockService, useValue: issuesServiceSpy },
-        provideAnimationsAsync(), ///UNSTUCK BUGFIX, WILL HAVE TO REVIEW LATer
+        { provide: IssuesMockService, useValue: issueServiceSpy },
+        //provideAnimationsAsync(), ///UNSTUCK BUGFIX, WILL HAVE TO REVIEW LATer
       ],
     })
       .compileComponents()
@@ -33,7 +44,7 @@ describe('NewIssueFormComponent', () => {
         fixture = TestBed.createComponent(NewIssueFormComponent);
         component = fixture.componentInstance;
         el = fixture.debugElement;
-        fixture.detectChanges();
+        harnessLoader = TestbedHarnessEnvironment.loader(fixture);
       });
   });
 
@@ -53,6 +64,8 @@ describe('NewIssueFormComponent', () => {
   });
 
   it('should display a disabled submit button at the start', fakeAsync(() => {
+    fixture.detectChanges();
+
     const button = el.query(By.directive(MatButton));
 
     expect(button).withContext('submit button is not present').toBeTruthy();
@@ -94,7 +107,48 @@ describe('NewIssueFormComponent', () => {
       .toBeTruthy();
   });
 
-  it('should display a dropdown input for the available column list', () => {});
+  it('should display the default column as the selected option at the start', () => {
+    fixture.componentRef.setInput('column', 'mockColumn');
 
-  it('should display a text area field for the issue description', () => {});
+    expect(component.columnControl.value)
+      .withContext(
+        'the column control value has not been set to the correct default value'
+      )
+      .toEqual('mockColumn');
+
+    fixture.detectChanges();
+
+    //Missing: has to check if the view shows the correct column
+
+    pending();
+  });
+
+  it('should display a dropdown input for the available column list', async () => {
+    let expectedOptions = ['column1', 'column2', 'column3', 'column4'];
+
+    issueServiceSpy.getColumns.and.returnValue(of(expectedOptions));
+
+    fixture.detectChanges();
+
+    let selectHarness = await harnessLoader.getHarness(MatSelectHarness); //Obtain matSelectInput handler
+
+    await selectHarness.open(); //Simulate that user opened the dropdown menu
+
+    const matHarnessOptions = await selectHarness.getOptions();
+
+    let actualOptions: string[] = [];
+
+    for (let index = 0; index < matHarnessOptions.length; index++) {
+      const optionValue = await matHarnessOptions[index].getText();
+      actualOptions.push(optionValue);
+    }
+
+    expect(actualOptions)
+      .withContext('options shown in dropdown menu were not correct')
+      .toEqual(expectedOptions);
+  });
+
+  it('should display a text area field for the issue description', () => {
+    pending();
+  });
 });
