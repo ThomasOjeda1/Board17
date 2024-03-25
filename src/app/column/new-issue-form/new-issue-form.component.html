@@ -2,6 +2,8 @@
   <mat-form-field>
     <mat-label>Input</mat-label>
     <input [formControl]="titleControl" matInput />
+    @if ( titleControl.invalid ) {
+    <mat-error class="title-error-message"> Title is required </mat-error>}
   </mat-form-field>
   <mat-form-field>
     <mat-label>Column</mat-label>
@@ -16,11 +18,7 @@
     ></textarea>
   </mat-form-field>
 
-  <button
-    mat-button
-    [disabled]="titleControl.hasError('required')"
-    (click)="addIssue()"
-  >
+  <button mat-button [disabled]="!titleControl.valid" (click)="addIssue()">
     Add issue
   </button>
 </section>

@@ -1,13 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 
 import { NewIssueFormComponent } from './new-issue-form.component';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MaterialModule } from '../../material/material.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { IssuesMockService } from '../../issues-mock.service';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { MatButton } from '@angular/material/button';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('NewIssueFormComponent', () => {
   let component: NewIssueFormComponent;
@@ -21,7 +21,7 @@ describe('NewIssueFormComponent', () => {
     issuesServiceSpy = jasmine.createSpyObj('issuesService', ['addNewIssue']);
 
     await TestBed.configureTestingModule({
-      imports: [NewIssueFormComponent],
+      imports: [NewIssueFormComponent, ReactiveFormsModule],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefServiceSpy }, ///UNSTUCK BUGFIX, WILL HAVE TO REVIEW LATer
         { provide: IssuesMockService, useValue: issuesServiceSpy },
@@ -41,6 +41,7 @@ describe('NewIssueFormComponent', () => {
     spyOn(component, 'ngOnDestroy').and.callThrough();
 
     dialogRefServiceSpy.close.and.callFake(() => {
+      //fixture.destroy(); does not work, ngondestroy() is always called before destroy()
       component.ngOnDestroy();
     });
 
@@ -51,16 +52,15 @@ describe('NewIssueFormComponent', () => {
       .toHaveBeenCalledTimes(1);
   });
 
-  it('should display a disabled submit button at the start', () => {
-    fixture.detectChanges();
+  it('should display a disabled submit button at the start', fakeAsync(() => {
     const button = el.query(By.directive(MatButton));
 
     expect(button).withContext('submit button is not present').toBeTruthy();
 
-    expect(button.attributes['disabled'])
+    expect(button.nativeElement.attributes['disabled'])
       .withContext('submit button was enabled at the start')
-      .toBeFalsy();
-  });
+      .toBeTruthy();
+  }));
 
   it('should display an enabled submit button when title field is not empty', () => {
     component.titleControl.setValue('aMockedValue');
@@ -71,10 +71,28 @@ describe('NewIssueFormComponent', () => {
 
     expect(button.attributes['disabled'])
       .withContext('submit button was disabled with a non-empty title field')
-      .toBeTruthy();
+      .toBeFalsy();
   });
 
-  it('should display an error message when title input is touched and empty', () => {});
+  it('should display an error message when title input is touched and empty', () => {
+    const titleErrorCssClass = '.title-error-message';
+    let errorMessage = el.query(By.css(titleErrorCssClass));
+    expect(errorMessage).withContext('error message was present').toBeFalsy();
+
+    component.titleControl.setValue('mockValue');
+    component.titleControl.markAsTouched();
+    fixture.detectChanges();
+    errorMessage = el.query(By.css(titleErrorCssClass));
+    expect(errorMessage).withContext('error message was present').toBeFalsy();
+
+    component.titleControl.setValue(undefined);
+    component.titleControl.markAsTouched();
+    fixture.detectChanges();
+    errorMessage = el.query(By.css(titleErrorCssClass));
+    expect(errorMessage)
+      .withContext('error message was not present')
+      .toBeTruthy();
+  });
 
   it('should display a dropdown input for the available column list', () => {});
 
