@@ -107,20 +107,23 @@ describe('NewIssueFormComponent', () => {
       .toBeTruthy();
   });
 
-  it('should display the default column as the selected option at the start', () => {
-    fixture.componentRef.setInput('column', 'mockColumn');
+  it('should display the default column as the selected option at the start', async () => {
+    const mockedValue = 'mockColumn';
+    issueServiceSpy.getColumns.and.returnValue(of([mockedValue])); //The input does not change in the html if the child options do not match
+    fixture.componentRef.setInput('column', mockedValue);
 
     expect(component.columnControl.value)
       .withContext(
         'the column control value has not been set to the correct default value'
       )
-      .toEqual('mockColumn');
+      .toEqual(mockedValue); //this tests if the input model is corretly set up
 
     fixture.detectChanges();
-
-    //Missing: has to check if the view shows the correct column
-
-    pending();
+    let matSelectHarness = await harnessLoader.getHarness(MatSelectHarness);
+    let shownValue = await matSelectHarness.getValueText();
+    expect(shownValue)
+      .withContext('select input did not show expected initial value')
+      .toBe(mockedValue); //This tests if the html is correctly showing the mocked value
   });
 
   it('should display a dropdown input for the available column list', async () => {
