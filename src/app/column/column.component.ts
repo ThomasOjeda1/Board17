@@ -8,6 +8,7 @@ import { MaterialModule } from '../material/material.module';
 import { TriggerDebugger } from '../TriggerDebugger';
 import { MatDialog } from '@angular/material/dialog';
 import { NewIssueFormComponent } from './new-issue-form/new-issue-form.component';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-column',
@@ -15,6 +16,7 @@ import { NewIssueFormComponent } from './new-issue-form/new-issue-form.component
   imports: [IssueComponent, CommonModule, MaterialModule],
   templateUrl: './column.component.html',
   styleUrl: './column.component.scss',
+
 })
 export class ColumnComponent {
   @Input() columnName!: string;
@@ -28,6 +30,7 @@ export class ColumnComponent {
   issues!: Issue[];
 
   @ViewChild('list', { read: ElementRef }) theList!: ElementRef;
+
 
   ngOnInit() {
     this.issues$ = this.issueService.getColumnIssues(this.columnName).pipe(
@@ -83,4 +86,6 @@ export class ColumnComponent {
     const dialogRef = this.dialogService.open(NewIssueFormComponent);
     dialogRef.componentRef?.setInput('column', this.columnName);
   }
+
+
 }
