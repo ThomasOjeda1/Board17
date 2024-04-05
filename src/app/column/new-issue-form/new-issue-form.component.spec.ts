@@ -34,9 +34,8 @@ describe('NewIssueFormComponent', () => {
         NoopAnimationsModule,
       ],
       providers: [
-        { provide: MatDialogRef, useValue: dialogRefServiceSpy }, ///UNSTUCK BUGFIX, WILL HAVE TO REVIEW LATer
+        { provide: MatDialogRef, useValue: dialogRefServiceSpy },
         { provide: IssuesMockService, useValue: issueServiceSpy },
-        //provideAnimationsAsync(), ///UNSTUCK BUGFIX, WILL HAVE TO REVIEW LATer
       ],
     })
       .compileComponents()
@@ -152,6 +151,10 @@ describe('NewIssueFormComponent', () => {
   });
 
   it('should display a text area field for the issue description', () => {
-    pending();
+    const textArea = el.query(By.css('.description-text-area'));
+
+    expect(textArea)
+      .withContext('did not display a text area field')
+      .toBeTruthy();
   });
 });

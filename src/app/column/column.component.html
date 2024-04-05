@@ -3,6 +3,7 @@
   <mat-list
     #list
     cdkDropList
+    [cdkDropListData]="columnName"
     class="issueList"
     (cdkDropListDropped)="issueDropped($event)"
   >

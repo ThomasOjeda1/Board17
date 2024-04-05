@@ -52,10 +52,12 @@ export class ColumnComponent {
     debuggerHelper.startObserving();
   }
 
-  issueDropped($event: CdkDragDrop<string[]>) {
+  issueDropped($event: CdkDragDrop<string>) {
+    console.log($event.previousContainer.data); //WITH THIS AND THE PREVIOUS INDEX I CAN CALL ISSUE MOCK SERVICE AND RETRIEVE THE ID OF THE ISSUE
     //It was dropped over an issue
     if (this.issueExistsInThisColumn($event.currentIndex))
       this.issueService.moveIssueBeforeTargetInColumn(
+        //THIS IS SOOOO NOT COOL; USE THE ISSUE SERVICE TO LOOKUP THE ELEMENT ID!!
         $event.previousContainer.element.nativeElement.children[
           $event.previousIndex
         ].id,
